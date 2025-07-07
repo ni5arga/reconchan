@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "reconchan",
+  "version": "1.0.0",
+  "description": "browser extension for detecting website tech stack, javascript endpoints and leaked secrets.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "48": "icons/icon48.png"
+  },
+  "permissions": [
+    "scripting",
+    "tabs",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"]
+    }
+  ]
+}
