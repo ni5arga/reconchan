@@ -10,7 +10,7 @@ function showLoading() {
       <div class="reconchan-spinner">
         <div></div><div></div><div></div><div></div>
       </div>
-      <div style="margin-top:12px;color:#ffb6f9;font-weight:500;">Loading recon data...</div>
+      <div style="margin-top:12px;color:#5c6ac4;font-weight:500;">Loading recon data...</div>
     </div>
   `;
 }
@@ -50,7 +50,7 @@ function renderReconData(data) {
   html += createSection('CDNs', data.cdns);
   html += createSection('Hosting', data.hosting);
   html += createSection('Analytics', data.analytics);
-  html += createSection('Other', data.other);
+  html += createSection('Other', data.misc);
   html += createSection('JS Files', data.scripts, url => `<li><a href="${url}" target="_blank" rel="noopener">${url}</a></li>`);
   html += createSection('Endpoints', data.endpoints, url => `<li><code>${url}</code></li>`);
   html += createSecretsSection(data.secrets);
