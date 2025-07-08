@@ -211,7 +211,6 @@ function runDetectors(detectors) {
 }
 
 // some regex patterns are sourced from https://github.com/odomojuli/regextokens & https://github.com/h33tlit/secret-regex-list
-// the AWS API key detection regex is weird
 
 const regexes = [
   { "name": "Slack Bot Token", "pattern": "xoxb-[0-9]{11}-[0-9]{11}-[0-9a-zA-Z]{24}" },
@@ -414,14 +413,19 @@ function extractJSReconData() {
   }
 }
 
-try {
-  setTimeout(() => {
-    debugLog('Sending recon data to background (async)');
-    chrome.runtime.sendMessage({
-      type: "RECON_DATA",
-      data: extractJSReconData()
-    });
-  }, 0);
-} catch (e) {
-  debugLog('Fatal error in reconchan content', e);
-}
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg && msg.type === 'GET_RECON_DATA') {
+    try {
+      setTimeout(() => {
+        debugLog('Popup requested recon data, running detection');
+        const data = extractJSReconData();
+        sendResponse(data);
+      }, 0);
+    } catch (e) {
+      debugLog('Error running detection for popup', e);
+      sendResponse({ error: 'Recon extraction failed' });
+    }
+    // Indicate async response
+    return true;
+  }
+});

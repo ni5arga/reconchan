@@ -18,14 +18,21 @@ function showLoading() {
 document.addEventListener("DOMContentLoaded", () => {
   showLoading();
   debugLog('Popup DOMContentLoaded');
-  chrome.runtime.sendMessage({ type: "GET_RECON_DATA" }, (data) => {
-    debugLog('Received data from background', data);
-    if (!data) {
-      document.getElementById('results').innerHTML = '<div class="section"><em>No data found. Try refreshing the page or reloading the extension.</em></div>';
-      debugLog('No data found in popup');
+  // Query the active tab and send message to its content script
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs || !tabs[0] || !tabs[0].id) {
+      document.getElementById('results').innerHTML = '<div class="section"><em>No active tab found.</em></div>';
       return;
     }
-    renderReconData(data);
+    chrome.tabs.sendMessage(tabs[0].id, { type: "GET_RECON_DATA" }, (data) => {
+      debugLog('Received data from content script', data);
+      if (!data || data.error) {
+        document.getElementById('results').innerHTML = '<div class="section"><em>No data found. Try refreshing the page or reloading the extension.</em></div>';
+        debugLog('No data found in popup');
+        return;
+      }
+      renderReconData(data);
+    });
   });
 });
 
