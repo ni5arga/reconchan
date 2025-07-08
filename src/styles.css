@@ -1,118 +1,91 @@
 body {
-  background: linear-gradient(135deg, #ff6fd8 0%, #3813c2 100%);
-  color: #f7f7fa;
-  font-family: 'Poppins', 'Inter', 'Segoe UI', Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  min-width: 350px;
-  min-height: 440px;
-  letter-spacing: 0.01em;
-}
-
-.section {
-  background: rgba(255,255,255,0.10);
-  border-radius: 16px;
-  margin: 22px 18px 0 18px;
-  padding: 18px 20px 12px 20px;
-  box-shadow: 0 4px 24px 0 rgba(56,19,194,0.10), 0 1.5px 8px 0 rgba(255,111,216,0.08);
-  backdrop-filter: blur(2px);
-}
-
-h2 {
-  color: #ff6fd8;
-  font-size: 1.18em;
-  margin: 0 0 10px 0;
-  letter-spacing: 0.06em;
-  font-weight: 700;
-  text-shadow: 0 1px 8px #3813c2cc;
-}
-
-ul {
-  list-style: none;
+  font-family: 'Segoe UI', Arial, sans-serif;
   padding: 0;
   margin: 0;
+  background: #f5f7fa;
+  color: #222;
+  min-width: 320px;
+  min-height: 420px;
 }
-
-li {
-  margin-bottom: 7px;
-  word-break: break-all;
-  font-size: 1em;
-  line-height: 1.6;
-  border-radius: 6px;
-  transition: background 0.18s;
-}
-li:hover {
-  background: rgba(255,111,216,0.08);
-}
-
-a {
-  color: #6fd0ff;
-  text-decoration: underline;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-a:hover {
-  color: #ff6fd8;
-}
-
-code {
-  background: rgba(56,19,194,0.18);
-  color: #ffb6f9;
-  border-radius: 5px;
-  padding: 2px 7px;
-  font-size: 0.98em;
-  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-  background: #ff6fd8;
-}
-::-webkit-scrollbar-thumb {
-  background: #3813c2;
-  border-radius: 8px;
-}
-
-.section em {
-  color: #ffb6f9;
-  font-style: normal;
-}
-
-.section ul {
-  margin-bottom: 0;
-}
-
-.section:last-child {
-  margin-bottom: 22px;
-}
-
-#results {
-  margin-top: 12px;
-}
-
 header {
-  text-align: center;
-  padding: 1.2em 1em 0.5em 1em;
-  background: transparent;
-}
-header h1 {
-  font-family: 'Poppins', 'Inter', 'Segoe UI', Arial, sans-serif;
-  font-size: 2em;
-  font-weight: 800;
+  background: #5c6ac4;
   color: #fff;
-  margin: 0 0 0.1em 0;
-  letter-spacing: 0.08em;
-  text-shadow: 0 2px 16px #ff6fd8cc, 0 1px 8px #3813c2cc;
+  padding: 1.2em 1em 0.5em 1em;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 8px #0001;
+  text-align: center;
 }
 .subtitle {
-  font-size: 1.05em;
-  color: #ffb6f9;
+  font-size: 0.95em;
+  color: #e0e7ff;
   margin: 0.2em 0 0.5em 0;
-  font-weight: 500;
-  letter-spacing: 0.04em;
 }
-
+main {
+  padding: 1em;
+}
+section {
+  margin-bottom: 1.2em;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px #0001;
+  padding: 0.7em 1em 0.5em 1em;
+}
+h2 {
+  margin: 0 0 0.2em 0;
+  font-size: 1.5em;
+  letter-spacing: 1px;
+}
+h3 {
+  margin: 0.5em 0 0.5em 0;
+  font-size: 1.1em;
+  color: #5c6ac4;
+}
+ul {
+  padding-left: 1.2em;
+  margin: 0.2em 0 0.5em 0;
+}
+li {
+  margin-bottom: 4px;
+  word-break: break-all;
+  font-size: 0.98em;
+  line-height: 1.5;
+}
+#secrets li {
+  background: #f8fafc;
+  border-left: 4px solid #5c6ac4;
+  padding: 0.2em 0.5em;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.copy-btn {
+  background: #5c6ac4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.2s;
+}
+.copy-btn:hover {
+  background: #3b4176;
+}
+footer {
+  text-align: center;
+  padding: 0.7em 1em 1em 1em;
+  font-size: 0.92em;
+  color: #888;
+}
+footer a {
+  color: #5c6ac4;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
 .reconchan-spinner {
   display: inline-block;
   position: relative;
@@ -125,21 +98,21 @@ header h1 {
   position: absolute;
   width: 38px;
   height: 38px;
-  border: 4px solid #ff6fd8;
+  border: 4px solid #5c6ac4;
   border-radius: 50%;
   animation: reconchan-spin 1.2s cubic-bezier(0.5,0,0.5,1) infinite;
-  border-color: #ff6fd8 transparent transparent transparent;
+  border-color: #5c6ac4 transparent transparent transparent;
 }
 .reconchan-spinner div:nth-child(2) {
-  border-color: #6fd0ff transparent transparent transparent;
+  border-color: #e0e7ff transparent transparent transparent;
   animation-delay: -0.45s;
 }
 .reconchan-spinner div:nth-child(3) {
-  border-color: #3813c2 transparent transparent transparent;
+  border-color: #f8fafc transparent transparent transparent;
   animation-delay: -0.3s;
 }
 .reconchan-spinner div:nth-child(4) {
-  border-color: #ffb6f9 transparent transparent transparent;
+  border-color: #3b4176 transparent transparent transparent;
   animation-delay: -0.15s;
 }
 @keyframes reconchan-spin {
