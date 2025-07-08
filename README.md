@@ -5,7 +5,7 @@ browser extension for fingerprinting websites — detect tech stacks, leaked sec
 
 **how it works**
 
-once installed, reconchan automatically runs on every page you visit and extracts:
+once installed, reconchan stays idle in the background. when you open the extension popup on any website, it instantly analyzes the current page and extracts:
 
 * **frontend frameworks** like react, vue, svelte, angular, next.js, astro, etc.
 * **css libraries** like bootstrap, tailwind, daisyui, material ui, etc.
