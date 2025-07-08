@@ -4,6 +4,7 @@
 browser extension for fingerprinting websites — detect tech stacks, leaked secrets, javascript endpoints, and more.
 
 **how it works**
+
 once installed, reconchan automatically runs on every page you visit and extracts:
 
 * **frontend frameworks** like react, vue, svelte, angular, next.js, astro, etc.
@@ -20,6 +21,7 @@ once installed, reconchan automatically runs on every page you visit and extract
 * **javascript endpoints** from fetch, xhr, websocket, hardcoded urls, and decoded base64
 
 **why it's useful**
+
 whether you're doing recon, bug bounty, tech research, or just snooping — reconchan helps you quickly understand what's running under the hood of any website.
 
 **status**
