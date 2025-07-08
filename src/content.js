@@ -7,7 +7,10 @@ function debugLog(...args) {
 debugLog('Content script loaded');
 
 const frameworkDetectors = [
-  { name: "React", check: () => window.React || window.__REACT_DEVTOOLS_GLOBAL_HOOK__ || !!Array.from(document.scripts).find(s => /react(-dom)?/i.test(s.src)) },
+  { name: "React", check: () => window.React || window.__REACT_DEVTOOLS_GLOBAL_HOOK__ || !!Array.from(document.scripts).find(s => /react(-dom)?/i.test(s.src)) || !!document.querySelector('[data-reactroot], [data-reactid]') },
+  { name: "Next.js", check: () => window.__NEXT_DATA__ || !!Array.from(document.scripts).find(s => /_next\//i.test(s.src)) || !!document.querySelector('body[data-nextjs]') },
+  { name: "NestJS", check: () => /nestjs/i.test(document.documentElement.innerHTML) || !!Array.from(document.scripts).find(s => /nestjs/i.test(s.src)) },
+  { name: "Astro", check: () => !!Array.from(document.scripts).find(s => /astro/i.test(s.src)) || !!document.querySelector('html[astro]') },
   { name: "Preact", check: () => window.preact || !!Array.from(document.scripts).find(s => /preact/i.test(s.src)) },
   { name: "Vue.js", check: () => window.Vue || window.__VUE_DEVTOOLS_GLOBAL_HOOK__ || !!document.querySelector('[vue], [data-v-app]') },
   { name: "Nuxt.js", check: () => !!Array.from(document.scripts).find(s => /nuxt/i.test(s.src)) || !!window.__NUXT__ },
@@ -307,6 +310,7 @@ function extractEndpoints(rawScripts) {
   const endpoints = new Set();
   const apiLike = /\/api\/|\/v\d+\/|\/graphql|\/rest|\/auth|\/token|\/user|\/admin|\/login|\/logout|\/register|\/session|\/data|\/backend|\/server|\/webhook|\/callback|\/upload|\/download|\/payment|\/checkout|\/cart|\/order|\/product|\/invoice|\/customer|\/account|\/profile|\/me|\/oauth|\/jwt|\/refresh|\/secret|\/key|\/config|\/settings|\/info|\/status|\/health/i;
   const staticAsset = /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|mp4|webm|ogg|mp3|wav|zip|rar|tar|gz|pdf|docx?|xlsx?|pptx?|csv|xml|json|map)(\?.*)?$/i;
+  const staticDomains = /cloudinary\.com|imgur\.com|unsplash\.com|gstatic\.com|googleusercontent\.com|cdnjs|jsdelivr|unpkg|fonts\.(googleapis|gstatic)\.com|static\./i;
   for (const script of rawScripts) {
     for (const regex of endpointRegexes) {
       let match;
@@ -316,7 +320,8 @@ function extractEndpoints(rawScripts) {
         try {
           const u = new URL(url, location.origin);
           if (staticAsset.test(u.pathname)) continue;
-          if (apiLike.test(u.pathname) || /\.(php|asp|aspx|jsp|cgi|pl|py|rb|go|sh|do|action|svc|ashx|cfm|dll|json|xml)$/i.test(u.pathname)) {
+          if (staticDomains.test(u.hostname)) continue;
+          if (apiLike.test(u.pathname) || /\.(php|asp|aspx|jsp|cgi|pl|py|rb|go|sh|do|action|svc|ashx|cfm|dll)$/i.test(u.pathname)) {
             endpoints.add(u.href);
           }
         } catch {}
@@ -325,11 +330,12 @@ function extractEndpoints(rawScripts) {
     // Heuristic: look for fetch/ajax calls with API-like paths
     const fetchApi = script.match(/fetch\s*\(\s*['"]([^'"]+)['"]/gi) || [];
     for (const f of fetchApi) {
-      const m = f.match(/['"]([^'"]+)['"]/);
+      const m = f.match(/['"]([^'"]+)['"]?/);
       if (m && m[1]) {
         try {
           const u = new URL(m[1], location.origin);
           if (staticAsset.test(u.pathname)) continue;
+          if (staticDomains.test(u.hostname)) continue;
           if (apiLike.test(u.pathname)) endpoints.add(u.href);
         } catch {}
       }
@@ -340,12 +346,22 @@ function extractEndpoints(rawScripts) {
 
 function extractSecrets(rawScripts) {
   const secrets = [];
+  function looksLikeSecret(val) {
+    if (!val) return false;
+    if (val.length < 20) return false;
+    if (/^(https?:\/\/|www\.|[\w-]+\.[a-z]{2,})/i.test(val)) return false; // skip URLs/domains
+    if (/\/image\/upload\//.test(val)) return false; // skip cloudinary image fragments
+    if (/\.(png|jpg|jpeg|gif|svg|webp|ico|mp4|webm|ogg|mp3|wav|zip|rar|tar|gz|pdf|docx?|xlsx?|pptx?|csv|xml|json|map)$/i.test(val)) return false; // skip static assets
+    return true;
+  }
   for (const script of rawScripts) {
     for (const { name, pattern } of regexes) {
       const r = new RegExp(pattern, "g");
       const matches = script.match(r);
       if (matches) {
-        matches.forEach(value => secrets.push({ type: name, value }));
+        matches.forEach(value => {
+          if (looksLikeSecret(value)) secrets.push({ type: name, value });
+        });
       }
     }
   }
