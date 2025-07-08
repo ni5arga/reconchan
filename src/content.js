@@ -211,6 +211,7 @@ function runDetectors(detectors) {
 }
 
 // some regex patterns are sourced from https://github.com/odomojuli/regextokens & https://github.com/h33tlit/secret-regex-list
+// the AWS API key detection regex is weird
 
 const regexes = [
   { "name": "Slack Bot Token", "pattern": "xoxb-[0-9]{11}-[0-9]{11}-[0-9a-zA-Z]{24}" },
