@@ -1,5 +1,7 @@
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Poppins', 'Inter', 'Segoe UI', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   padding: 0;
   margin: 0;
   background: #f5f7fa;
@@ -14,6 +16,8 @@ header {
   border-radius: 0 0 12px 12px;
   box-shadow: 0 2px 8px #0001;
   text-align: center;
+  font-family: 'Poppins', 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
 }
 .subtitle {
   font-size: 0.95em;
@@ -30,15 +34,12 @@ section {
   box-shadow: 0 1px 4px #0001;
   padding: 0.7em 1em 0.5em 1em;
 }
-h2 {
+h2, h3 {
+  font-family: 'Poppins', 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
   margin: 0 0 0.2em 0;
   font-size: 1.5em;
   letter-spacing: 1px;
-}
-h3 {
-  margin: 0.5em 0 0.5em 0;
-  font-size: 1.1em;
-  color: #5c6ac4;
 }
 ul {
   padding-left: 1.2em;
