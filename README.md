@@ -25,5 +25,6 @@ once installed, reconchan automatically runs on every page you visit and extract
 whether you're doing recon, bug bounty, tech research, or just snooping — reconchan helps you quickly understand what's running under the hood of any website.
 
 **status**
+
 this extension is under active development. things might break, detection isn't perfect, and the ui is still being improved.
 
