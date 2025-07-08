@@ -305,21 +305,34 @@ function extractExternalScripts() {
 
 function extractEndpoints(rawScripts) {
   const endpoints = new Set();
+  const apiLike = /\/api\/|\/v\d+\/|\/graphql|\/rest|\/auth|\/token|\/user|\/admin|\/login|\/logout|\/register|\/session|\/data|\/backend|\/server|\/webhook|\/callback|\/upload|\/download|\/payment|\/checkout|\/cart|\/order|\/product|\/invoice|\/customer|\/account|\/profile|\/me|\/oauth|\/jwt|\/refresh|\/secret|\/key|\/config|\/settings|\/info|\/status|\/health/i;
+  const staticAsset = /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|mp4|webm|ogg|mp3|wav|zip|rar|tar|gz|pdf|docx?|xlsx?|pptx?|csv|xml|json|map)(\?.*)?$/i;
   for (const script of rawScripts) {
     for (const regex of endpointRegexes) {
       let match;
       while ((match = regex.exec(script))) {
-        if (match[1]) endpoints.add(match[1]);
-        else if (match[2]) endpoints.add(match[2]);
-        else endpoints.add(match[0]);
+        let url = match[1] || match[2] || match[0];
+        if (!url) continue;
+        try {
+          const u = new URL(url, location.origin);
+          if (staticAsset.test(u.pathname)) continue;
+          if (apiLike.test(u.pathname) || /\.(php|asp|aspx|jsp|cgi|pl|py|rb|go|sh|do|action|svc|ashx|cfm|dll|json|xml)$/i.test(u.pathname)) {
+            endpoints.add(u.href);
+          }
+        } catch {}
       }
     }
-    const base64Candidates = script.match(/([A-Za-z0-9+/]{20,}={0,2})/g) || [];
-    for (const b64 of base64Candidates) {
-      try {
-        const decoded = atob(b64);
-        if (/https?:\/\//.test(decoded)) endpoints.add(decoded);
-      } catch {}
+    // Heuristic: look for fetch/ajax calls with API-like paths
+    const fetchApi = script.match(/fetch\s*\(\s*['"]([^'"]+)['"]/gi) || [];
+    for (const f of fetchApi) {
+      const m = f.match(/['"]([^'"]+)['"]/);
+      if (m && m[1]) {
+        try {
+          const u = new URL(m[1], location.origin);
+          if (staticAsset.test(u.pathname)) continue;
+          if (apiLike.test(u.pathname)) endpoints.add(u.href);
+        } catch {}
+      }
     }
   }
   return Array.from(endpoints);
@@ -354,33 +367,44 @@ function detectSuspicious(rawScripts) {
 
 function extractJSReconData() {
   debugLog('Extracting JS recon data');
-  const externalScripts = extractExternalScripts();
-  const rawScripts = extractRawScripts();
-  const result = {
-    frameworks: runDetectors(frameworkDetectors),
-    utilities: runDetectors(utilityDetectors),
-    css: runDetectors(cssDetectors),
-    buildTools: runDetectors(buildToolDetectors),
-    ecommerce: runDetectors(ecommerceDetectors),
-    cms: runDetectors(cmsDetectors),
-    analytics: runDetectors(analyticsDetectors),
-    auth: runDetectors(authDetectors),
-    hosting: runDetectors(hostingDetectors),
-    ai: runDetectors(aiDetectors),
-    testing: runDetectors(testDetectors),
-    misc: runDetectors(miscDetectors),
-    cdns: runDetectors(cdnDetectors),
-    scripts: externalScripts,
-    endpoints: extractEndpoints(rawScripts),
-    secrets: extractSecrets(rawScripts),
-    suspicious: detectSuspicious(rawScripts)
-  };
-  debugLog('Detection result', result);
-  return result;
+  try {
+    const externalScripts = extractExternalScripts();
+    const rawScripts = extractRawScripts();
+    const result = {
+      frameworks: runDetectors(frameworkDetectors),
+      utilities: runDetectors(utilityDetectors),
+      css: runDetectors(cssDetectors),
+      buildTools: runDetectors(buildToolDetectors),
+      ecommerce: runDetectors(ecommerceDetectors),
+      cms: runDetectors(cmsDetectors),
+      analytics: runDetectors(analyticsDetectors),
+      auth: runDetectors(authDetectors),
+      hosting: runDetectors(hostingDetectors),
+      ai: runDetectors(aiDetectors),
+      testing: runDetectors(testDetectors),
+      misc: runDetectors(miscDetectors),
+      cdns: runDetectors(cdnDetectors),
+      scripts: externalScripts,
+      endpoints: extractEndpoints(rawScripts),
+      secrets: extractSecrets(rawScripts),
+      suspicious: detectSuspicious(rawScripts)
+    };
+    debugLog('Detection result', result);
+    return result;
+  } catch (e) {
+    debugLog('Recon extraction error', e);
+    return { error: 'Recon extraction failed' };
+  }
 }
 
-debugLog('Sending recon data to background');
-chrome.runtime.sendMessage({
-  type: "RECON_DATA",
-  data: extractJSReconData()
-});
+try {
+  setTimeout(() => {
+    debugLog('Sending recon data to background (async)');
+    chrome.runtime.sendMessage({
+      type: "RECON_DATA",
+      data: extractJSReconData()
+    });
+  }, 0);
+} catch (e) {
+  debugLog('Fatal error in reconchan content', e);
+}
